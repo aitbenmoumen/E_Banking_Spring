@@ -1,6 +1,7 @@
 package com.aitbenmoumen.e_bank;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.boot.CommandLineRunner;
@@ -38,6 +39,7 @@ public class EBankApplication {
                 });
             customerRepository.findAll().forEach(customer -> {
                 CurrentAccount account = new CurrentAccount();
+                account.setId(UUID.randomUUID().toString());
                 account.setBalance(Math.random() * 10000);
                 account.setCreatedAt(new Date());
                 account.setCustomer(customer);
@@ -45,6 +47,7 @@ public class EBankApplication {
                 bankAccountRepository.save(account);
 
                 SavingAccount savingAccount = new SavingAccount();
+                savingAccount.setId(UUID.randomUUID().toString());
                 savingAccount.setBalance(Math.random() * 10000);
                 savingAccount.setCreatedAt(new Date());
                 savingAccount.setCustomer(customer);

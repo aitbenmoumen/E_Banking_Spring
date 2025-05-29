@@ -1,7 +1,16 @@
 package com.aitbenmoumen.e_bank;
 
+import java.util.stream.Stream;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import com.aitbenmoumen.e_bank.entities.Customer;
+import com.aitbenmoumen.e_bank.repositories.AccountOperationRepository;
+import com.aitbenmoumen.e_bank.repositories.BankAccountRepository;
+import com.aitbenmoumen.e_bank.repositories.CustomerRepository;
 
 @SpringBootApplication
 public class EBankApplication {
@@ -9,5 +18,21 @@ public class EBankApplication {
     public static void main(String[] args) {
         SpringApplication.run(EBankApplication.class, args);
     }
+    @Bean
+    CommandLineRunner start(
+        CustomerRepository customerRepository,
+        BankAccountRepository bankAccountRepository,
+        AccountOperationRepository accountOperationRepository
+    ){
+        return args -> {
+            Stream.of("John Doe", "Jane Smith", "Alice Johnson")
+                .forEach(name -> {
+                    Customer customer = new Customer();
+                    customer.setName(name);
+                    customer.setEmail(name.toLowerCase().replace(" ", ".") + "@example.com");
+                    customerRepository.save(customer);
+                });
+        };
 
+    }
 }

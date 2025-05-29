@@ -25,7 +25,8 @@ import java.util.List;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class BankAccount {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private double balance;
     private Date createdAt;
     private AccountStatus status;

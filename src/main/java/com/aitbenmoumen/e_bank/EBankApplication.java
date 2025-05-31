@@ -9,10 +9,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.aitbenmoumen.e_bank.entities.AccountOperation;
 import com.aitbenmoumen.e_bank.entities.BankAccount;
 import com.aitbenmoumen.e_bank.entities.CurrentAccount;
 import com.aitbenmoumen.e_bank.entities.Customer;
 import com.aitbenmoumen.e_bank.entities.SavingAccount;
+import com.aitbenmoumen.e_bank.enums.AccountStatus;
+import com.aitbenmoumen.e_bank.enums.OperationType;
 import com.aitbenmoumen.e_bank.repositories.AccountOperationRepository;
 import com.aitbenmoumen.e_bank.repositories.BankAccountRepository;
 import com.aitbenmoumen.e_bank.repositories.CustomerRepository;
@@ -42,6 +45,7 @@ public class EBankApplication {
                 account.setId(UUID.randomUUID().toString());
                 account.setBalance(Math.random() * 10000);
                 account.setCreatedAt(new Date());
+                account.setStatus(AccountStatus.CREATED);
                 account.setCustomer(customer);
                 account.setOverdraftLimit(9000);
                 bankAccountRepository.save(account);
@@ -50,9 +54,21 @@ public class EBankApplication {
                 savingAccount.setId(UUID.randomUUID().toString());
                 savingAccount.setBalance(Math.random() * 10000);
                 savingAccount.setCreatedAt(new Date());
+                savingAccount.setStatus(AccountStatus.CREATED);
                 savingAccount.setCustomer(customer);
                 savingAccount.setInterestRate(5.5);
                 bankAccountRepository.save(savingAccount);
+            });
+            bankAccountRepository.findAll().forEach(acc ->{
+                for(int i =0; i < 5 ; i++){
+                    AccountOperation accountOperation = new AccountOperation();
+                    accountOperation.setAmount(Math.random()*10000);
+                    accountOperation.setOperationDate(new Date());
+                    accountOperation.setOperationType(Math.random() > 0.5 ? OperationType.CREDIT : OperationType.DEBIT);
+                    accountOperation.setBankAccount(acc);
+                    accountOperationRepository.save(accountOperation);
+                    
+                }
             });
 
         };

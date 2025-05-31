@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 @Entity
-//@DiscriminatorValue("CA")
+@DiscriminatorValue("CA")
 @Data @NoArgsConstructor @AllArgsConstructor
 public class CurrentAccount extends BankAccount {
     private double overdraftLimit; // The maximum amount that can be overdrawn from the account

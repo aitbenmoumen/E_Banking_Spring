@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import com.aitbenmoumen.e_bank.entities.AccountOperation;
-import com.aitbenmoumen.e_bank.entities.BankAccount;
 import com.aitbenmoumen.e_bank.entities.CurrentAccount;
 import com.aitbenmoumen.e_bank.entities.Customer;
 import com.aitbenmoumen.e_bank.entities.SavingAccount;

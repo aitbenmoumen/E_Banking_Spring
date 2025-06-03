@@ -4,12 +4,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+
+
 import org.springframework.stereotype.Service;
 
+import com.aitbenmoumen.e_bank.entities.AccountOperation;
 import com.aitbenmoumen.e_bank.entities.BankAccount;
 import com.aitbenmoumen.e_bank.entities.CurrentAccount;
 import com.aitbenmoumen.e_bank.entities.Customer;
 import com.aitbenmoumen.e_bank.entities.SavingAccount;
+import com.aitbenmoumen.e_bank.enums.OperationType;
 import com.aitbenmoumen.e_bank.repositories.AccountOperationRepository;
 import com.aitbenmoumen.e_bank.repositories.BankAccountRepository;
 import com.aitbenmoumen.e_bank.repositories.CustomerRepository;
@@ -32,14 +36,11 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     // Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-
     @Override
     public Customer saveCustomer(Customer customer) {
         log.info("Saving a new customer");
         return customerRepository.save(customer);
     }
-
-    
 
     @Override
     public List<Customer> listCustumers() {
@@ -48,31 +49,41 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException{
-         Long id = Long.parseLong(accountId);
+        Long id = Long.parseLong(accountId);
         BankAccount bank = bankAccountRepository.findById(id)
         .orElseThrow(()-> new BankAccountNotFoundException("Bank account does not exist !!"));
         return bank;
     }
 
     @Override
-    public void debit(String accountId, double amount, String description) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'debit'");
+    public void debit(String accountId, double amount, String description) throws BankAccountNotFoundException {
+        BankAccount account = getBankAccount(accountId);
+        if (account.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance for debit");
+        }
+        account.setBalance(account.getBalance() - amount);
+        bankAccountRepository.save(account);
+        
+        AccountOperation operation = new AccountOperation(null, new Date(), amount, OperationType.DEBIT, account, description);
+        accountOperationRepository.save(operation);
+        log.info("Debited " + amount + " from " + accountId + ": " + description);
     }
 
     @Override
-    public void credit(String accountId, double amount, String description) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'credit'");
+    public void credit(String accountId, double amount, String description) throws BankAccountNotFoundException {
+        BankAccount account = getBankAccount(accountId);
+        account.setBalance(account.getBalance() + amount);
+        bankAccountRepository.save(account);
+
+        accountOperationRepository.save(new AccountOperation(null, new Date(), amount, OperationType.CREDIT, account, description));
+        log.info("Credited " + amount + " to " + accountId + ": " + description);
     }
 
     @Override
-    public void transfer(String accountIdSource, String accountIdDestination, double amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'transfer'");
+    public void transfer(String accountIdSource, String accountIdDestination, double amount) throws BankAccountNotFoundException {
+        debit(accountIdSource, amount, "Transfer to " + accountIdDestination);
+        credit(accountIdDestination, amount, "Transfer from " + accountIdSource);
     }
-
-
 
     @Override
     public BankAccount saveCurrentBankAccount(double initialBalance, Long customerId, double overDraft) throws CustomerNotFoundException {
@@ -89,9 +100,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         return bankAccountRepository.save(bankAccount);
     }
 
-
-
-
     @Override
     public BankAccount saveSavingBankAccount(double initialBalance, Long customerId, double intrestRate) throws CustomerNotFoundException {
          Customer customer = customerRepository.findById(customerId)
@@ -106,6 +114,5 @@ public class BankAccountServiceImpl implements BankAccountService {
 
         return bankAccountRepository.save(bankAccount);
     }
-
 
 }

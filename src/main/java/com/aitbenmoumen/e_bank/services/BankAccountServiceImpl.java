@@ -13,6 +13,7 @@ import com.aitbenmoumen.e_bank.entities.SavingAccount;
 import com.aitbenmoumen.e_bank.repositories.AccountOperationRepository;
 import com.aitbenmoumen.e_bank.repositories.BankAccountRepository;
 import com.aitbenmoumen.e_bank.repositories.CustomerRepository;
+import com.aitbenmoumen.exceptions.BankAccountNotFoundException;
 import com.aitbenmoumen.exceptions.CustomerNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -42,14 +43,15 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public List<Customer> listCustumers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listCustumers'");
+        return customerRepository.findAll();
     }
 
     @Override
-    public BankAccount getBankAccount(String accountId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBankAccount'");
+    public BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException{
+         Long id = Long.parseLong(accountId);
+        BankAccount bank = bankAccountRepository.findById(id)
+        .orElseThrow(()-> new BankAccountNotFoundException("Bank account does not exist !!"));
+        return bank;
     }
 
     @Override

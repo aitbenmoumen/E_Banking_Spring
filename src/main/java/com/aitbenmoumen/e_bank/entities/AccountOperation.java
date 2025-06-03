@@ -27,4 +27,5 @@ public class AccountOperation {
     private OperationType operationType; // Assuming OperationType is an enum you have defined
     @ManyToOne
     private BankAccount bankAccount;
+    private String description;
 }

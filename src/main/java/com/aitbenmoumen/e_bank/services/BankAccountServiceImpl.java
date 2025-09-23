@@ -3,9 +3,11 @@ package com.aitbenmoumen.e_bank.services;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
-
+import com.aitbenmoumen.e_bank.dtos.CustomerDTO;
+import com.aitbenmoumen.e_bank.mappers.BankAccountMapperImpl;
 import org.springframework.stereotype.Service;
 
 import com.aitbenmoumen.e_bank.entities.AccountOperation;
@@ -33,7 +35,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     private CustomerRepository customerRepository;
     private BankAccountRepository bankAccountRepository;
     private AccountOperationRepository accountOperationRepository;
-
+    private BankAccountMapperImpl bankAccountMapper;
     // Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     @Override
@@ -43,8 +45,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public List<Customer> listCustumers() {
-        return customerRepository.findAll();
+    public List<CustomerDTO> listCustumers() {
+        List<Customer> customers = customerRepository.findAll();
+        return customers.stream().map(e -> bankAccountMapper.fromCustomer(e)).toList();
     }
 
     @Override
@@ -63,11 +66,11 @@ public class BankAccountServiceImpl implements BankAccountService {
         }
         account.setBalance(account.getBalance() - amount);
         bankAccountRepository.save(account);
-        
+
         AccountOperation operation = new AccountOperation(null, new Date(), amount, OperationType.DEBIT, account, description);
         accountOperationRepository.save(operation);
         log.info("Debited " + amount + " from " + accountId + ": " + description);
-    
+
     }
 
 

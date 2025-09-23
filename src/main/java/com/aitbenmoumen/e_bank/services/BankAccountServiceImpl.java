@@ -67,7 +67,9 @@ public class BankAccountServiceImpl implements BankAccountService {
         AccountOperation operation = new AccountOperation(null, new Date(), amount, OperationType.DEBIT, account, description);
         accountOperationRepository.save(operation);
         log.info("Debited " + amount + " from " + accountId + ": " + description);
+    
     }
+
 
     @Override
     public void credit(String accountId, double amount, String description) throws BankAccountNotFoundException {

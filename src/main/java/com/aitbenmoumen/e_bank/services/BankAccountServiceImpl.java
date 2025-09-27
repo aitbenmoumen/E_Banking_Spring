@@ -39,9 +39,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     // Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     @Override
-    public Customer saveCustomer(Customer customer) {
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
         log.info("Saving a new customer");
-        return customerRepository.save(customer);
+        Customer customer = bankAccountMapper.fromCustomerDTO(customerDTO);
+        Customer saveCustomer = customerRepository.save(customer);
+        return bankAccountMapper.fromCustomer(saveCustomer);
     }
 
     @Override
@@ -49,11 +51,16 @@ public class BankAccountServiceImpl implements BankAccountService {
         List<Customer> customers = customerRepository.findAll();
         return customers.stream().map(e -> bankAccountMapper.fromCustomer(e)).toList();
     }
+    @Override
+    public CustomerDTO getCustomerById(Long id) throws Exception {
+        Customer customer = customerRepository.findById(id).orElseThrow(()-> new Exception("customer not found"));
+        return bankAccountMapper.fromCustomer(customer);
+    }
 
     @Override
     public BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException{
-        Long id = Long.parseLong(accountId);
-        BankAccount bank = bankAccountRepository.findById(id)
+
+        BankAccount bank = bankAccountRepository.findById(accountId)
         .orElseThrow(()-> new BankAccountNotFoundException("Bank account does not exist !!"));
         return bank;
     }
@@ -89,6 +96,8 @@ public class BankAccountServiceImpl implements BankAccountService {
         debit(accountIdSource, amount, "Transfer to " + accountIdDestination);
         credit(accountIdDestination, amount, "Transfer from " + accountIdSource);
     }
+
+
 
     @Override
     public BankAccount saveCurrentBankAccount(double initialBalance, Long customerId, double overDraft) throws CustomerNotFoundException {

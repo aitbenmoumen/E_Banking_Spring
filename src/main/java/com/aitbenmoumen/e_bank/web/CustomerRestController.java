@@ -14,9 +14,10 @@ import java.util.List;
 public class CustomerRestController {
     private BankAccountService bankAccountService;
     private CustomerRepository customerRepository;
+
     @GetMapping("/customers")
     public List<CustomerDTO> listCustomers() {
-        return bankAccountService.listCustumers();
+        return bankAccountService.listCustomers();
     }
     @GetMapping("/customers/{id}")
     public CustomerDTO getCustomer(@PathVariable(name = "id") Long customerId) throws Exception {

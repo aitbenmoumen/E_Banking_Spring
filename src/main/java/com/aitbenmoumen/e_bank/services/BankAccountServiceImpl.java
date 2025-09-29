@@ -47,9 +47,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public List<CustomerDTO> listCustumers() {
+    public List<CustomerDTO> listCustomers() {
         List<Customer> customers = customerRepository.findAll();
-        return customers.stream().map(e -> bankAccountMapper.fromCustomer(e)).toList();
+        return customers.stream().map(e -> bankAccountMapper.fromCustomer(e)).collect(Collectors.toList());
     }
     @Override
     public CustomerDTO getCustomerById(Long id) throws Exception {
